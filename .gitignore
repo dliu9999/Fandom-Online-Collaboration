@@ -137,4 +137,4 @@ data/eda/*
 !data/eda/.gitkeep 
 
 # personal notebooks
-# notebooks/personal/*
+notebooks/personal/*
