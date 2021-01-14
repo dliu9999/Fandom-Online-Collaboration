@@ -7,7 +7,8 @@ sys.path.insert(0, 'src/data')
 sys.path.insert(0, 'src/features')
 sys.path.insert(0, 'src/visualization')
 
-from make_dataset import *
+# from make_dataset import *
+from etl import *
 from build_features import *
 from visualize import *
 
@@ -18,8 +19,16 @@ def main(targets):
     test_config = json.load(open('config/test-params.json'))
         
     if 'data-db' in targets:
-        pass
-        
+        for i in range(len(sql_config['xml_fp'])):
+            #convert to light dump
+            fp = sql_config['xml_fp'][i]
+            outfp = sql_config['ld_outfp'][i]
+            xml_to_light_dump(fp, outfp)
+            
+            #store content
+            outfp = sql_config['content_outfp'][i]
+            store_xml_content(fp, outfp)
+            
     if 'eda' in targets:
         pass
         

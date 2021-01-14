@@ -1,11 +1,11 @@
 import pandas as pd
 import twint
 
-def tweets_query(search, since, until, pandas=True, csv=True, output='test.csv'):
-	'''
-	Query tweets with search terms between given dates
-	Sample query: tweets_query('#whitelivesmatter', '2020–05–20', '2020–05–30')
-	'''
+def tweets_query(search, since, until, pandas=True, csv=False, output='test.csv'):
+    '''
+    Query tweets with search terms between given dates
+    Sample query: tweets_query('#whitelivesmatter', '2020–05–20', '2020–05–30')
+    '''
     c = twint.Config()
     c.Search = search
     c.Since = since
