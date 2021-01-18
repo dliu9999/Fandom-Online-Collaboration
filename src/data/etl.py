@@ -222,3 +222,48 @@ def store_xml_content(fp, outfp):
     soup = xml_to_soup(fp)
     dframes = soup_to_df_with_content(soup)
     return df_to_content(dframes, outfp)
+
+#reading lightdump files
+def lightdump_read_n(fp, n = 100):
+    '''
+	Reads in n lightdump pages and returns a list of all titles 
+    read and their corresponding data as a DataFrame
+	:param fp: input filepath
+	:param n: number of articles to read
+	:return: list of article titles, list of corresponding article lightdump data as DataFrame
+	'''
+    titles = []
+    dataframes = []
+
+    with open(fp) as file:
+        df = pd.DataFrame(columns = ['timestamp', 'revert', 'revision_id', 'user'])
+        page = 0
+        for line in file:
+            if '^^^_' not in line:
+                title = line.strip('\n').strip()
+                titles.append(title)
+
+                if title != titles[page]:
+                    page += 1
+                    
+                    df['timestamp'] = pd.to_datetime(df['timestamp'])
+                    
+                    dataframes.append(df)
+                    
+                    df = pd.DataFrame(columns = ['timestamp', 'revert', 'revision_id', 'user'])
+
+                    if page == n:
+                        break
+            else:
+                data = line.strip("^^^_").strip('\n').split()
+                row = pd.Series(dtype = 'object')
+
+                row['timestamp'] = data[0]
+                row['revert'] = int(data[1])
+                row['revision_id'] = int(data[2])
+                row['user'] = data[3]
+
+                df = df.append(row, ignore_index = True)
+    dataframes.append(df)
+
+    return [titles, dataframes]
