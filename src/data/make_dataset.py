@@ -138,6 +138,38 @@ def xml_to_light_dump(fp, outfp):
     return df_to_ld(df, outfp)
 
 
+def read_lightdump(fp):
+    '''
+	Reads in n lightdump pages and returns a list of all titles 
+    read and their corresponding data as a DataFrame
+	:param fp: input filepath
+	:param n: number of articles to read
+	:return: list of article titles, list of corresponding article lightdump data as DataFrame
+	'''
+    
+    with open(fp) as file:
+        df = pd.DataFrame(columns = ['date', 'revert', 'revision_id', 'length', 'user'])
+        for line in file:
+            if '^^^_' not in line:
+                title = line.strip('\n').strip()
+
+            else:
+                data = line.strip("^^^_").strip('\n').split()
+                row = pd.Series(dtype = 'object')
+
+                row['date'] = data[0]
+                row['revert'] = int(data[1])
+                row['revision_id'] = int(data[2])
+                row['length'] = int(data[3])
+                row['user'] = data[4]
+
+                df = df.append(row, ignore_index = True)
+
+    df['date'] = pd.DatetimeIndex(pd.to_datetime(df.date)).tz_localize(None)
+    df.date = df.date.apply(lambda x: x.date())
+    return title, df
+
+
 ##### For Twitter #####
 
 def tweets_query(search, since, until, pandas=True, csv=False, output='test.csv'):

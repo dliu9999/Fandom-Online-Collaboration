@@ -8,7 +8,7 @@ sys.path.insert(0, 'src/features')
 sys.path.insert(0, 'src/visualization')
 
 # from make_dataset import *
-from etl import *
+from make_dataset import *
 from build_features import *
 from visualize import *
 
