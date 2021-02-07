@@ -1,6 +1,6 @@
 #to turn raw data into features for modeling
 import pandas as pd
-import wikipedia
+#import wikipedia
 import sys
 
 sys.path.insert(0, 'src/data')

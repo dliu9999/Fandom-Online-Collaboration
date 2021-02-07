@@ -1,28 +1,13 @@
 #creating explanatory and results oriented visualizations
 import pandas as pd
 import sys
+import os
 
 sys.path.insert(0, 'src/data')
 
-# from make_dataset import *
-from etl import *
+from make_dataset import *
 
-def normalize_dates(df, release_date, start=-2, end=10):
-    '''
-    Normalizes dates to release date, only keeping "start" days
-    before to "end" days after. Returns a copy.
-    '''
-    df = df.copy()
-    df['date'] = pd.to_datetime(df['date'])
-    date_diff = (pd.Timestamp(release_date) - df['date'].min())
-    normalized_dates = (pd.factorize(df['date'], sort=True)[0] - date_diff.days).astype(object)
-    
-    # remove out of scope
-    normalized_dates[(normalized_dates > end) | (normalized_dates < start)] = np.NaN
-    df['normalized_dates'] = normalized_dates
-    return df.dropna(subset=['normalized_dates'])
-
-def plot_albums(title, *album_tups):
+def plot_albums(title, outdir, *album_tups):
     '''
     Plots multiple albums as a single overlayed line plot with
     normalized dates
@@ -47,5 +32,19 @@ def plot_albums(title, *album_tups):
     
     # legend
     ax.legend(legend)
+    ax.figure.savefig(os.path.join(outdir, title + '.png'))
 
-    
+def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
+    '''
+    Generate twitter overlaid plot
+    '''
+    tweet_csvs = os.listdir(tweets_fp)
+    dfs = []
+
+    # normalize dates
+    for csv, date in zip(tweet_csvs, tweets_release_dates):
+        df = pd.read_csv(os.path.join(tweets_fp, csv))
+        dfs.append(normalize_dates(df, date))
+    # plot overlaid line chart
+    tweet_tup = tuple(zip(dfs, tweets_legend))
+    plot_albums('Tweet Plots', outdir, *tweet_tup)

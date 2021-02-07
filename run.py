@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import json
 
 sys.path.insert(0, 'src/data')
@@ -14,8 +15,6 @@ from visualize import *
 
 def main(targets):
     sql_config = json.load(open('config/data-db-params.json'))
-    eda_config = json.load(open('config/eda-params.json'))
-    all_config = json.load(open('config/all-params.json'))
     test_config = json.load(open('config/test-params.json'))
         
     if 'data-db' in targets:
@@ -28,15 +27,17 @@ def main(targets):
             #store content
             outfp = sql_config['content_outfp'][i]
             store_xml_content(fp, outfp)
-            
-    if 'eda' in targets:
-        pass
-        
-    if 'all' in targets:
-        pass
         
     if 'test' in targets:
-        pass
+        outdir = test_config['outdir']
+
+        ### Tweets ###
+        tweets_fp = test_config['tweets_fp']
+        tweets_release_dates = test_config['tweets_release_dates']
+        tweets_legend = test_config['tweets_legend']
+        generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir)
+        print('Generated twitter plot')
+        
         
     else:
         print('You did not pass in any arguments!')

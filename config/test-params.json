@@ -1,1 +1,4 @@
-{}
+{"outdir": "data/eda",
+ "tweets_fp": "test/testdata/tweets",
+ "tweets_release_dates": ["2014-08-19", "2018-05-18", "2020-11-20"],
+ "tweets_legend": ["album1", "album2", "album3"]}

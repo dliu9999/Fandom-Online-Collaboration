@@ -14,8 +14,8 @@ def get_xml(titles):
     url_part2 = '&history=1&action=submit'
     
     for title in titles:
-    url = url_part1 + title + url_part2
-    response = requests.get(url)   #web request
+        url = url_part1 + title + url_part2
+        response = requests.get(url)   #web request
 
     #create wiki folder
     if not os.path.isdir("data/raw/wiki"):
@@ -190,3 +190,18 @@ def tweets_query(search, since, until, pandas=True, csv=False, output='test.csv'
     twint.run.Search(c)
     Tweets_df = twint.storage.panda.Tweets_df
     return Tweets_df
+
+def normalize_dates(df, release_date, start=-2, end=10):
+    '''
+    Normalizes dates to release date, only keeping "start" days
+    before to "end" days after. Returns a copy.
+    '''
+    df = df.copy()
+    df['date'] = pd.to_datetime(df['date'])
+    date_diff = (pd.Timestamp(release_date) - df['date'].min())
+    normalized_dates = (pd.factorize(df['date'], sort=True)[0] - date_diff.days).astype(object)
+    
+    # remove out of scope
+    normalized_dates[(normalized_dates > end) | (normalized_dates < start)] = np.NaN
+    df['normalized_dates'] = normalized_dates
+    return df.dropna(subset=['normalized_dates'])
