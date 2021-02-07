@@ -19,6 +19,7 @@ def plot_albums(title, outdir, *album_tups):
     legend = []
     album, leg = album_tups[0]
     legend.append(leg)
+    
     ax = album.groupby('normalized_dates').size().plot(figsize=(10,7), title=title)
     for album_tup in album_tups[1:]:
         album, leg = album_tup
@@ -33,18 +34,39 @@ def plot_albums(title, outdir, *album_tups):
     # legend
     ax.legend(legend)
     ax.figure.savefig(os.path.join(outdir, title + '.png'))
+    ax.clear()
 
 def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
     '''
     Generate twitter overlaid plot
     '''
     tweet_csvs = os.listdir(tweets_fp)
+    tweet_csvs.sort()
     dfs = []
 
     # normalize dates
     for csv, date in zip(tweet_csvs, tweets_release_dates):
         df = pd.read_csv(os.path.join(tweets_fp, csv))
         dfs.append(normalize_dates(df, date))
+        
     # plot overlaid line chart
     tweet_tup = tuple(zip(dfs, tweets_legend))
     plot_albums('Tweet Plots', outdir, *tweet_tup)
+    
+def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
+    '''
+    Generate wiki overlaid plot
+    '''
+    wiki_ld = os.listdir(wiki_fp)
+    wiki_ld.sort()
+    dfs = []
+
+    # normalize dates
+    for dump, date in zip(wiki_ld, wiki_release_dates):
+        fp = os.path.join(wiki_fp, dump)
+        title, df = read_lightdump(fp)
+        dfs.append(normalize_dates(df, date))
+        
+    # plot overlaid line chart
+    wiki_tup = tuple(zip(dfs, wiki_legend))
+    plot_albums('Wiki Plots', outdir, *wiki_tup)
