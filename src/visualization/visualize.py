@@ -1,11 +1,14 @@
 #creating explanatory and results oriented visualizations
 import pandas as pd
+import seaborn as sns
 import sys
 
 sys.path.insert(0, 'src/data')
 
 # from make_dataset import *
 from etl import *
+from trends import *
+from pageviews import *
 
 #visualize Wikipedia activity before / after album releases
 def date_range(release_date):
@@ -54,4 +57,64 @@ def visualize_album_activity(fp, release_dates):
         ax.axvline(x, color='purple', alpha=0.5)
 
         plt.savefig("data/eda/album_" + title + "wiki_activity.png")
+        
+        
+def visualize_google_trends(fp, outdir):
+    '''
+    Visualize Google Trends data with search terms between
+    given dates
     
+    :param fp: file path to directory with data
+    :param outdir: file path to directory where to save the plot
+    '''
+    trend_csvs = os.listdir(fp)
+    
+    for csv in trend_csvs:
+        df = pd.read_csv(os.path.join(fp, csv))
+        
+        start = str(df['date'].min())[:10]
+        end = str(df['date'].max())[10:]
+        
+        title_text = 'Google Search Trends: '+ start + ' to ' +\
+                end + ')'
+        
+        file_name = 'Google Trend Plots'+ start + ' ' + end + '.png'
+        
+        #plotting
+        g = sns.lineplot(data = df, x = 'date', y = 'Popularity',
+                 hue = 'Artist', dashes = False)
+        
+        g.set_title(title_text)
+        g.set(xlabel = 'Date')
+        
+        plt.savefig('data/eda/' + file_name)
+        
+        
+def visualize_pageviews(fp, outdir):
+    '''
+    Visualize Wikipedia page view data
+    
+    :param fp: file path to directory with data
+    :param outdir: file path to directory where to save the plot
+    '''
+    trend_csvs = os.listdir(fp)
+    
+    for csv in trend_csvs:
+        df = pd.read_csv(os.path.join(fp, csv))
+        
+        start = str(df['timestamp'].min())[:10]
+        end = str(df['timestamp'].max())[10:]
+        
+        title_text = 'Wikipedia Page Views: '+ start + ' to ' +\
+                end + ')'
+        
+        file_name = 'Wikipedia Page Views'+ start + ' ' + end + '.png'
+        
+        #plotting
+        g = sns.lineplot(data = df, x = 'timestamp', y = 'views',
+                 hue = 'article', dashes = False)
+        
+        g.set_title(title_text)
+        g.set(xlabel = 'Date', ylabel = Views)
+        
+        plt.savefig('data/eda/' + file_name)
