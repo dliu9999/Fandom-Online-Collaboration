@@ -1,8 +1,10 @@
 import pandas as pd
-import twint
 import numpy as np
 import os
 from bs4 import BeautifulSoup
+import twint
+from pytrends.request import TrendReq
+import pageviewapi
 
 ##### For Wikipedia #####
 
@@ -205,3 +207,65 @@ def normalize_dates(df, release_date, start=-2, end=10):
     normalized_dates[(normalized_dates > end) | (normalized_dates < start)] = np.NaN
     df['normalized_dates'] = normalized_dates
     return df.dropna(subset=['normalized_dates'])
+
+
+##### For Google Trends #####
+    
+def query_trends(term_list,
+                 category = None, dates = 'all'):
+    '''
+    Query Google Trends data with search terms between
+    given dates
+    
+    :param term_list: list of terms to search
+    :param category: optional Google Trends category
+    :param dates: start and end dates of query search in 'yyyy-mm-dd yyyy-mm-dd' format
+    
+    :return: DataFrame with Google Trends popularity for the search terms in the given timeframe
+    '''
+    pytrends = TrendReq()
+    
+    pytrends.build_payload(kw_list = term_list,
+                           timeframe = dates)
+    
+    df = pytrends.interest_over_time()
+    
+    df.drop('isPartial', inplace = True, axis = 1)
+    df.reset_index(inplace = True)
+    
+    df = df.melt(id_vars = ['date'],
+                var_name = 'artist',
+                value_name = 'popularity')
+    
+    return df
+
+
+##### For Wikipedia Page Views #####
+
+def query_per_article(page, start, end, interval = 'daily'):
+    '''
+    Query Wikipedia page view data from English Wikipedia
+    for a specific page between given dates
+    
+    :param page: specific Wikipedia page to query
+    :param start: start date in yyyy-mm-dd format, cannot be prior to 2015-07-01
+    :param end: end date in yyyy-mm-dd format, cannot be prior to 2015-07-01
+    :param interval: date interval such as daily, monthly, etc.
+    
+    :return: DataFrame listing page views for a single article within a specific timeframe
+    '''
+    raw_page = pageviewapi.per_article('en.wikipedia', page, start,
+                                        end, granularity = interval)
+    
+    page_views = raw_page.items()
+    page_views = list(page_views)[0][1]
+    page_views = pd.DataFrame.from_dict(page_views)
+    page_views = page_views[['article', 'timestamp', 'views']]
+
+    page_views['timestamp'] = page_views['timestamp']\
+        .apply(lambda x: x[:4] + '-' + x[4:6] + '-' + x[6:8])
+
+    page_views['article'] = page_views['article']\
+        .apply(lambda y: y.replace('_', ' '))
+    
+    return page_views
