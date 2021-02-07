@@ -70,3 +70,67 @@ def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     # plot overlaid line chart
     wiki_tup = tuple(zip(dfs, wiki_legend))
     plot_albums('Wiki Plots', outdir, *wiki_tup)
+
+##### For Google Trends #####
+
+def visualize_google_trends(fp, outdir):
+    '''
+    Visualize Google Trends data with search terms between
+    given dates
+    
+    :param fp: file path to directory with data
+    :param outdir: file path to directory where to save the plot
+    '''
+    trend_csvs = os.listdir(fp)
+    
+    for csv in trend_csvs:
+        df = pd.read_csv(os.path.join(fp, csv))
+        
+        start = str(df['date'].min())[:10]
+        end = str(df['date'].max())[10:]
+        
+        title_text = 'Google Search Trends: '+ start + ' to ' +\
+                end + ')'
+        
+        file_name = 'Google Trend Plots'+ start + ' ' + end + '.png'
+        
+        #plotting
+        g = sns.lineplot(data = df, x = 'date', y = 'Popularity',
+                 hue = 'Artist', dashes = False)
+        
+        g.set_title(title_text)
+        g.set(xlabel = 'Date')
+        
+        plt.savefig('data/eda/' + file_name)
+        
+
+##### For Wikipedia Page Views #####
+
+def visualize_pageviews(fp, outdir):
+    '''
+    Visualize Wikipedia page view data
+    
+    :param fp: file path to directory with data
+    :param outdir: file path to directory where to save the plot
+    '''
+    trend_csvs = os.listdir(fp)
+    
+    for csv in trend_csvs:
+        df = pd.read_csv(os.path.join(fp, csv))
+        
+        start = str(df['timestamp'].min())[:10]
+        end = str(df['timestamp'].max())[10:]
+        
+        title_text = 'Wikipedia Page Views: '+ start + ' to ' +\
+                end + ')'
+        
+        file_name = 'Wikipedia Page Views Plot'+ start + ' ' + end + '.png'
+        
+        #plotting
+        g = sns.lineplot(data = df, x = 'timestamp', y = 'views',
+                 hue = 'article', dashes = False)
+        
+        g.set_title(title_text)
+        g.set(xlabel = 'Date', ylabel = Views)
+        
+        plt.savefig('data/eda/' + file_name)
