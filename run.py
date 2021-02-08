@@ -41,8 +41,13 @@ def main(targets):
         wiki_fp = test_config['wiki_fp'][1]
         wiki_summary_stats(wiki_fp, outdir)
         print('Generated wiki plots')
-        
-        
+
+        ### TRENDS/VIEWS ###
+        trends_fp = test_config['trends_fp']
+        views_fp = test_config['views_fp']
+        visualize_google_trends(trends_fp, outdir)
+        visualize_pageviews(views_fp, outdir)
+        print('Generated trends/views plots')
         
     else:
         print('You did not pass in any arguments!')

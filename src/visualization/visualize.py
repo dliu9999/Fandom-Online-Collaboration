@@ -1,7 +1,9 @@
 #creating explanatory and results oriented visualizations
-import pandas as pd
 import sys
 import os
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 sys.path.insert(0, 'src/data')
 
@@ -104,7 +106,7 @@ def visualize_google_trends(fp, outdir):
         g.set_title(title_text)
         g.set(xlabel = 'Date')
         
-        plt.savefig('data/eda/' + file_name)
+        plt.savefig(os.path.join(outdir, file_name))
         
 
 ##### For Wikipedia Page Views #####
@@ -134,6 +136,6 @@ def visualize_pageviews(fp, outdir):
                  hue = 'article', dashes = False)
         
         g.set_title(title_text)
-        g.set(xlabel = 'Date', ylabel = Views)
+        g.set(xlabel = 'Date', ylabel = 'Views')
         
-        plt.savefig('data/eda/' + file_name)
+        plt.savefig(os.path.join(outdir, file_name))

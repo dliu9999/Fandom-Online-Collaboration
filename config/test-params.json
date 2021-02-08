@@ -4,5 +4,7 @@
  "tweets_legend": ["album1", "album2", "album3"],
  "wiki_fp": ["test/testdata/wiki/albums", "test/testdata/wiki/groups"],
  "wiki_release_dates": ["2019-01-05", "2020-01-05", "2021-01-05"],
- "wiki_legend": ["album1", "album2", "album3"]
+ "wiki_legend": ["album1", "album2", "album3"],
+ "trends_fp": "test/testdata/trends",
+ "views_fp": "test/testdata/pageviews"
 }
