@@ -11,6 +11,8 @@ from bs4 import BeautifulSoup
 def get_xml(titles):
     '''
     Scrapes the xml for given list of Wikipedia pages
+
+    :param titles: list of wiki article names
     '''
     url_part1 = 'https://en.wikipedia.org/w/index.php?title=Special:Export&pages='
     url_part2 = '&history=1&action=submit'
@@ -32,6 +34,9 @@ def xml_to_soup(fp):
     '''
     Processes xml data using beautiful soup and
     returns list of data for each page
+
+    :param fp: xml input filepath
+    :return: list of data
     '''
     content = []
     with open(fp, encoding = 'utf8') as file:
@@ -48,7 +53,8 @@ def soup_to_df(page):
     Converts soupified xml data for Wiki pages 
     into dataframe
     
-    pages: list of xml data for each page
+    :param page: list of xml data for each page
+    :return: xml data as dataframe
     '''
     data = []
 
@@ -107,8 +113,10 @@ def df_to_ld(df, outpath):
     '''
     Given a list of cleaned dataframes from xml data,
     produces light dump file into data/raw
+
+    :param df: cleaned xml dataframes
+    :param outpath: output filepath for lightdumps    
     '''
-    
     light_dump = ''
     
     title = df.title[0]
@@ -121,20 +129,22 @@ def df_to_ld(df, outpath):
         f.write(light_dump)
     repo = 'XML Converted to light dump at ' + outpath
     print(repo)
-    
-    return
 
 def xml_to_light_dump(fp, outfp):
     '''
     Given an input file path and output path, 
     turns the xml file into a light dump 
     and stores it at the output file path
+
+    :param fp: input xml filepath
+    :param outfp: output filepath for lightdump
+    :return: lightdump
     '''
-    #create light dump directory first
+    # create light dump directory first
     if not os.path.isdir("data/raw/wiki/light_dump"):
         os.mkdir("../data/raw/wiki/light_dump")
     
-    #convert to light dump
+    # convert to light dump
     soup = xml_to_soup(fp)
     df = soup_to_df(soup)
     return df_to_ld(df, outfp)
@@ -174,10 +184,18 @@ def read_lightdump(fp):
 
 ##### For Twitter #####
 
-def tweets_query(search, since, until, pandas=True, csv=False, output='test.csv'):
+def tweets_query(search, since, until, pandas=True, csv=False, output='out.csv'):
     '''
     Query tweets with search terms between given dates
     Sample query: tweets_query('#whitelivesmatter', '2020–05–20', '2020–05–30')
+
+    :param search: search query
+    :param since: query start date
+    :param until: query end date
+    :param pandas: whether or not to return pandas df, default True
+    :param csv: whether or not to save as csv, default False
+    :param output: output filename, default 'out.csv'
+    :return: tweets dataframe
     '''
     c = twint.Config()
     c.Search = search
@@ -197,6 +215,12 @@ def normalize_dates(df, release_date, start=-2, end=10):
     '''
     Normalizes dates to release date, only keeping "start" days
     before to "end" days after. Returns a copy.
+
+    :param df: input album dataframe
+    :param release_date: album release date
+    :param start: number of days before release date to keep
+    :param end: number of days after release date to keep
+    :return: album dataframe with normalized dates
     '''
     df = df.copy()
     df['date'] = pd.to_datetime(df['date'])

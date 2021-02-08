@@ -15,6 +15,9 @@ def find_contributions(user):
     '''
     Given a username, 
     find all their contributions on Wikipedia
+
+    :param user: user's username
+    :return: user contributions on Wikipedia
     '''
     site = Site('en', 'wikipedia')  # The site we want to run our bot on
     user = User(site, user)
@@ -31,9 +34,13 @@ def find_users(fp, article_name):
     '''
     Given a light dump file and an article name, 
     find unique list of users who contributed
+
+    :param fp: lightdump input filepath
+    :param article_name: wiki article name
+    :return: list of unique users
     '''
 
-    #find usernames from ld
+    # find usernames from ld
     with open(fp) as f:
         content = f.readlines()
 
@@ -53,6 +60,13 @@ def find_users(fp, article_name):
 
 
 def user_contributions(fp, article_name):
+    '''
+    Finds contributions of users
+
+    :param fp: lightdump input filepath
+    :param article_name: wiki article name
+    :return: contributions of users
+    '''
     users = find_users(fp, article_name)
     contributions = {}
     for user in users:
@@ -66,6 +80,9 @@ def user_contributions(fp, article_name):
 def build_df(data):
     '''
     Given user contribution data, build a user contibution dataframe
+
+    :param data: user contribution data
+    :return: user contribution dataframe
     '''
     d = []
     user = data.keys()
@@ -84,6 +101,10 @@ def find_related(article_name, n):
     '''
     Given an article name, 
     returns n most related articles
+
+    :param article_name: wiki article name
+    :param n: number of articles to return
+    :return: n most related articles
     '''
     articles = []
     articles.append(article_name)
@@ -96,13 +117,17 @@ def kpop_fan(user, df):
     '''
     Given a username and dataframe of user contributions,
     determines whether a user is a kpop fan or not
+
+    :param user: user username
+    :param df: user contributions 
+    :return: whether user is a kpop fan or not
     '''
     u = df[df.users == user].groupby(['users', 'article_name']).count()
     tmp = u.sort_values(by='total_edits', ascending = False)
-    #get articles that they contributed in
+    # get articles that they contributed in
     total_articles = [article_name for (user, article_name) in tmp.index]
     articles = [x for x in total_articles if x in related]
-    #get percentage of kpop contributions
+    # get percentage of kpop contributions
     if len(articles) / len(total_articles) > 0.1:
         return 1
     else:
@@ -113,35 +138,44 @@ def percentage_fans(fp, article_name, search_related):
     '''
     Given an article revision history,
     gets percentage of fans from its users.
+
+    :param fp: input filepath
+    :param article_name: wiki article name
+    :param search_related: related article names
+    :return: percentage of k-pop fans
     '''
-    #transform data into dataframe format
+    # transform data into dataframe format
     data = user_contributions(fp, article_name)
     df = build_df(data)
 
-    #get all related article titles
+    # get all related article titles
     related = []
     for query in search_related:
         related += find_related(query, n=500)
 
-    #analyze each user
+    # analyze each user
     unique_users = df.users.unique()
     fans = [user for user in unique_users if kpop_fan(user,df) == 1 ]
     df['fan'] = df.users.apply(lambda x: 1 if x in fans else 0)
 
-    #get percentage of fans
+    # get percentage of fans
     return len(fans) / len(unique_users)
 
 
-# M STAT CALCULATION: single article
 def calculate_M(edits):
+    '''
+    Calculates the M stat for a single article
+    :param edits: edits
+    :return: M stat 
+    '''
     edits = edits.values.tolist()
     edits.reverse()
     
-    #cannot have edit war with 2 edits
+    # cannot have edit war with 2 edits
     if len(edits) <= 2:
         return 0
     
-    #cannot have edit war with less than 2 reverts
+    # cannot have edit war with less than 2 reverts
     try:
         num_reverts = sum([int(x[1]) for x in edits])
         if num_reverts < 2:
@@ -149,7 +183,7 @@ def calculate_M(edits):
     except:
         pass # bad data
     
-    #M STAT: find revert pairs
+    # M STAT: find revert pairs
     revert_pairs = []
 
     for lst in edits:
@@ -171,7 +205,7 @@ def calculate_M(edits):
             if (user_one, user_two) not in revert_pairs:
                 revert_pairs.append((user_one, user_two))
 
-    #M STAT: find mutual reverts
+    # M STAT: find mutual reverts
     mutual_rev_users = []
     mutual_rev_pairs = []
     for pair in revert_pairs:
@@ -184,17 +218,17 @@ def calculate_M(edits):
             mutual_rev_users.append(two)
             mutual_rev_users.append(one)
 
-    #remove duplicates, calculate num
+    # remove duplicates, calculate num
     E = len(list(set(mutual_rev_users)))
 
     if E == 0:
         return 0
     
-    #get num edits per user
+    # get num edits per user
     users = [x[3] for x in edits if len(x) == 4]
     user_edits = dict((x,users.count(x)) for x in set(users))
     
-    #calculate M
+    # calculate M
     M = 0
     
     for pair in list(set(mutual_rev_pairs)):
@@ -214,6 +248,8 @@ def calculate_M(edits):
 def summary_stats(files):
     '''
     Create a row of stats for a given article
+
+    :param files: lightdump files
     '''
     summary = pd.DataFrame([], columns = ['title', 
                                       'M', 
@@ -247,6 +283,9 @@ def summary_stats(files):
 def wiki_summary_stats(wiki_fp, outdir):
     '''
     Generate wiki summary stats
+
+    :param wiki_fp: input wiki fp
+    :param outdir: output filepath for csv
     '''
     wiki_ld = os.listdir(wiki_fp)
     wiki_ld.sort()

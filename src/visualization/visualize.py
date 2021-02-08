@@ -13,6 +13,9 @@ def plot_albums(title, outdir, *album_tups):
     '''
     Plots multiple albums as a single overlayed line plot with
     normalized dates
+
+    :param title: Title of overlaid plot
+    :outdir: output filepath for plot
     '''
     assert len(album_tups) > 1, 'passed in only one album'
     assert len(album_tups[0]) == 2, 'need to pass in both album and legend name'
@@ -41,6 +44,11 @@ def plot_albums(title, outdir, *album_tups):
 def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
     '''
     Generate twitter overlaid plot
+
+    :param tweets_fp: file path to directory with data
+    :param tweets_release_dates: album release dates for each plot
+    :param tweets_legend: legend names for overlaid plot
+    :param outdir: output filepath for plot
     '''
     tweet_csvs = os.listdir(tweets_fp)
     tweet_csvs.sort()
@@ -61,6 +69,11 @@ def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir
 def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     '''
     Generate wiki overlaid plot
+
+    :param wiki_fp: file path to directory with data
+    :param wiki_release_dates: album release dates for each plot
+    :param wiki_legend: legend names for overlaid plot
+    :param outdir: output filepath for plot
     '''
     wiki_ld = os.listdir(wiki_fp)
     wiki_ld.sort()
@@ -78,18 +91,18 @@ def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
 
 ##### For Google Trends #####
 
-def visualize_google_trends(fp, outdir):
+def visualize_google_trends(trends_fp, outdir):
     '''
     Visualize Google Trends data with search terms between
     given dates
     
-    :param fp: file path to directory with data
-    :param outdir: file path to directory where to save the plot
+    :param trends_fp: file path to directory with data
+    :param outdir: output filepath for plot
     '''
-    trend_csvs = os.listdir(fp)
+    trend_csvs = os.listdir(trends_fp)
     
     for csv in trend_csvs:
-        df = pd.read_csv(os.path.join(fp, csv))
+        df = pd.read_csv(os.path.join(trends_fp, csv))
         
         start = str(df['date'].min())[:10]
         end = str(df['date'].max())[10:]
@@ -111,17 +124,17 @@ def visualize_google_trends(fp, outdir):
 
 ##### For Wikipedia Page Views #####
 
-def visualize_pageviews(fp, outdir):
+def visualize_pageviews(views_fp, outdir):
     '''
     Visualize Wikipedia page view data
     
     :param fp: file path to directory with data
-    :param outdir: file path to directory where to save the plot
+    :param outdir: output filepath for plot
     '''
-    trend_csvs = os.listdir(fp)
+    trend_csvs = os.listdir(views_fp)
     
     for csv in trend_csvs:
-        df = pd.read_csv(os.path.join(fp, csv))
+        df = pd.read_csv(os.path.join(views_fp, csv))
         
         start = str(df['timestamp'].min())[:10]
         end = str(df['timestamp'].max())[10:]
