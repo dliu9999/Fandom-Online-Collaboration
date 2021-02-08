@@ -16,16 +16,7 @@ def main(targets):
     sql_config = json.load(open('config/data-db-params.json'))
     test_config = json.load(open('config/test-params.json'))
         
-    if 'data-db' in targets:
-        for i in range(len(sql_config['xml_fp'])):
-            #convert to light dump
-            fp = sql_config['xml_fp'][i]
-            outfp = sql_config['ld_outfp'][i]
-            xml_to_light_dump(fp, outfp)
-            
-            #store content
-            outfp = sql_config['content_outfp'][i]
-            store_xml_content(fp, outfp)
+#     if 'data-db' in targets:
         
     if 'test' in targets:
         outdir = test_config['outdir']
@@ -37,16 +28,18 @@ def main(targets):
         generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir)
         print('Generated twitter plots')
         
+        
         ### WIKIPEDIA ###
         
-        ### Album Release ###
-        wiki_fp = test_config['wiki_fp']
+        # Album Release
+        wiki_fp = test_config['wiki_fp'][0]
         wiki_release_dates = test_config['wiki_release_dates']
         wiki_legend = test_config['wiki_legend']
         generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir)
         
-        ### Summary Stats ###
-        
+        # Summary Stats
+        wiki_fp = test_config['wiki_fp'][1]
+        wiki_summary_stats(wiki_fp, outdir)
         print('Generated wiki plots')
         
         

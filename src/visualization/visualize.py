@@ -53,6 +53,9 @@ def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir
     tweet_tup = tuple(zip(dfs, tweets_legend))
     plot_albums('Tweet Plots', outdir, *tweet_tup)
     
+    
+##### For Wikipedia #####
+
 def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     '''
     Generate wiki overlaid plot

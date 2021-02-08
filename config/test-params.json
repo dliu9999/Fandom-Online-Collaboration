@@ -2,7 +2,7 @@
  "tweets_fp": "test/testdata/tweets",
  "tweets_release_dates": ["2014-08-19", "2018-05-18", "2020-11-20"],
  "tweets_legend": ["album1", "album2", "album3"],
- "wiki_fp": "test/testdata/wiki/albums",
+ "wiki_fp": ["test/testdata/wiki/albums", "test/testdata/wiki/groups"],
  "wiki_release_dates": ["2019-01-05", "2020-01-05", "2021-01-05"],
  "wiki_legend": ["album1", "album2", "album3"]
 }

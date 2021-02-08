@@ -170,10 +170,6 @@ def calculate_M(edits):
             
             if (user_one, user_two) not in revert_pairs:
                 revert_pairs.append((user_one, user_two))
-                
-                
-    if len(revert_pairs) == 0:
-        print("There are no reverting pairs")
 
     #M STAT: find mutual reverts
     mutual_rev_users = []
@@ -247,3 +243,17 @@ def summary_stats(files):
     summary['revert/edit'] = summary.num_reverts / summary.num_edits
     summary['bot/users'] = summary.num_bots / summary.num_users
     return summary
+
+def wiki_summary_stats(wiki_fp, outdir):
+    '''
+    Generate wiki summary stats
+    '''
+    wiki_ld = os.listdir(wiki_fp)
+    wiki_ld.sort()
+    files = []
+    
+    for dump in wiki_ld:
+        fp = os.path.join(wiki_fp, dump)
+        files.append(fp)
+    df = summary_stats(files)
+    df.to_csv(os.path.join(outdir, 'wiki_summary_stats.csv'))
