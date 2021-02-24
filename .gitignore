@@ -138,3 +138,5 @@ data/eda/*
 
 # personal notebooks
 notebooks/personal/*
+notebooks/*.txt
+notebooks/wlm/*.txt
