@@ -9,7 +9,7 @@ sys.path.insert(0, 'src/data')
 
 from make_dataset import *
 
-def plot_albums(title, outdir, *album_tups):
+def plot_albums(title, outdir=None, *album_tups):
     '''
     Plots multiple albums as a single overlayed line plot with
     normalized dates
@@ -25,21 +25,28 @@ def plot_albums(title, outdir, *album_tups):
     album, leg = album_tups[0]
     legend.append(leg)
     
-    ax = album.groupby('normalized_dates').size().plot(figsize=(10,7), title=title)
+    fig_dims = (6, 7)
+    fig, ax = plt.subplots(figsize=fig_dims)
+    sns.lineplot(x='normalized_dates', y=0, data=album.groupby('normalized_dates').size().reset_index(), ax=ax)
     for album_tup in album_tups[1:]:
         album, leg = album_tup
         legend.append(leg)
-        album.groupby('normalized_dates').size().plot(ax=ax)
+        sns.lineplot(x='normalized_dates', y=0, data=album.groupby('normalized_dates').size().reset_index(), ax=ax)
         
     # release date line
-    mean_counts = album.normalized_dates.value_counts().mean()
-    ax.annotate('Album Release', xy = (0, np.mean([0, mean_counts])), color='purple', alpha = 0.5)
+    max_counts = album.normalized_dates.value_counts().max()
     ax.axvline(0, color='purple', alpha=0.5)
     
     # legend
     ax.legend(legend)
-    ax.figure.savefig(os.path.join(outdir, title + '.png'))
-    ax.clear()
+    ax.set_title(title, fontsize=15)
+    ax.set_xlabel('Dates With Respect to Album Release', fontsize=13)
+    ax.set_ylabel('Number of Original Tweets', fontsize=13)
+    ax.yaxis.set_major_formatter(ticker.EngFormatter())
+    if outdir:
+        ax.figure.savefig(os.path.join(outdir, title + '.png'))
+
+##### For Twitter #####
 
 def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
     '''
@@ -63,6 +70,62 @@ def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir
     tweet_tup = tuple(zip(dfs, tweets_legend))
     plot_albums('Tweet Plots', outdir, *tweet_tup)
     
+def percent_col(users, col, a, perc=True):
+    '''
+    Finds the B% of engagament for a% of users
+    :param users: series of aggregate engagement for users
+    :param col: engagement column
+    :param a: percent of users
+    :param perc: if a is a percentage
+    '''
+    users = users[col].sort_values(ascending=False)
+    if perc:
+        a = int(len(users) * a)
+    prop = users.iloc[:a].sum() / users.sum()
+    return round(prop * 100, 2)
+
+def perc_plot(df, suptitle, dfs=None):
+    '''
+    Plots A% of users account for B% engagement plots
+    :param df: first (or only) df to plot
+    :param suptitle: title of all three plots
+    :param dfs: other dfs to be overlaid
+    '''
+    # if overlaid plot
+    if dfs:
+        colors = [sns.color_palette()[0]] * (len(dfs) + 1)
+        fig_dims = (20, 7)
+        ylim = (35, 100)
+    else:
+        colors = ['#e02460', '#19cf86', '#1DA1F2']
+        fig_dims = (20, 7)
+        ylim = (55, 100)
+    
+    # prepare lists and plot fig/ax
+    percs = np.arange(0, 0.051, 0.001)
+    perc_cols = ['likes_count', 'retweets_count', 'replies_count']
+    perc_titles = ['Likes', 'Retweets', 'Replies']
+    fig, ax = plt.subplots(1, 3, figsize=fig_dims)
+    fig.suptitle(suptitle, fontsize=18)
+    
+    for i in range(3):
+        # plot curve
+        curr = [percent_col(df, perc_cols[i], p) for p in percs]
+        sns.lineplot(percs*100, curr, ax=ax[i], color=colors[i])
+        
+        # overlay other df curves
+        if dfs:
+            for j in range(len(dfs)):
+                curr_df = [percent_col(dfs[j], perc_cols[i], p) for p in percs]
+                sns.lineplot(percs*100, curr_df, ax=ax[i], color=sns.color_palette()[j + 1])
+            if legend:
+                ax[i].legend(legend, loc=4)
+        ax[i].set_title('A% of Users Account for B% of ' + perc_titles[i], fontsize=15)
+        ax[i].set_xlabel('A', fontsize=13)
+        ax[i].set_ylabel('B', fontsize=13)
+        ax[i].xaxis.set_major_formatter(ticker.PercentFormatter())
+        ax[i].yaxis.set_major_formatter(ticker.PercentFormatter())
+        ax[i].set_ylim(ylim)
     
 ##### For Wikipedia #####
 

@@ -16,8 +16,6 @@ def main(targets):
     sql_config = json.load(open('config/data-db-params.json'))
     test_config = json.load(open('config/test-params.json'))
         
-#     if 'data-db' in targets:
-        
     if 'test' in targets:
         outdir = test_config['outdir']
 
