@@ -47,6 +47,16 @@ def main(targets):
         visualize_pageviews(views_fp, outdir)
         print('Generated trends/views plots')
         
+        
+        ### GOOGLE TRENDS ###
+        trends_fp = test_config['trends_fp']
+        
+        # Plotting
+        visualize_google_trends(trends_fp, outdir)
+        
+        # Summary Stats
+        trends_summary_stats(trends_fp, outdir)
+        
     else:
         print('You did not pass in any arguments!')
 

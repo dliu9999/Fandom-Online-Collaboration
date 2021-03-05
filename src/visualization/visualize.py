@@ -171,14 +171,15 @@ def visualize_google_trends(trends_fp, outdir):
         title_text = 'Google Search Trends: '+ start + ' to ' +\
                 end + ')'
         
-        file_name = 'Google Trend Plots'+ start + ' ' + end + '.png'
+        file_name = 'google_trend_plots_'+ start + '_' + end + '.png'
         
         #plotting
         g = sns.lineplot(data = df, x = 'date', y = 'Popularity',
                  hue = 'Artist', dashes = False)
         
-        g.set_title(title_text)
-        g.set(xlabel = 'Date')
+        plt.title(title_text, size = 15)
+        plt.xlabel("Date", size=13)
+        plt.ylabel("Popularity", size=13)
         
         plt.savefig(os.path.join(outdir, file_name))
         

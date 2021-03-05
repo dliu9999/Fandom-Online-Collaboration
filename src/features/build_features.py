@@ -296,3 +296,29 @@ def wiki_summary_stats(wiki_fp, outdir):
         files.append(fp)
     df = summary_stats(files)
     df.to_csv(os.path.join(outdir, 'wiki_summary_stats.csv'))
+    
+##### For Google Trends #####
+
+def trends_summary_stats(trends_fp, outdir):
+    '''
+    Generate Google Trends summary stats
+    
+    :param trends_fp: input Google Trends fp
+    :param outdir: output filepath for csv
+    '''
+    
+    trend_csvs = os.listdir(trends_fp)
+    
+    for csv in trend_csvs:
+        df = pd.read_csv(os.path.join(trends_fp, csv))
+        
+        summary = df.groupby('Artist').agg({'Popularity': ['mean', 'median',
+                                                 pd.Series.mode, 'count',
+                                                 'max', 'min', 'std',
+                                                 'var', 'skew', pd.DataFrame.kurt]})
+        
+        start = str(df['date'].min())[:10]
+        end = str(df['date'].max())[10:]
+        
+        file_name = 'google_trend_summary_stats_'+ start + '_' + end + '.csv'
+        df.to_csv(os.path.join(outdir, file_name))
