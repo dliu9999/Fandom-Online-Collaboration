@@ -41,8 +41,6 @@ def plot_albums(title, outdir=None, *album_tups):
     ax.legend(legend)
     ax.set_title(title, fontsize=15)
     ax.set_xlabel('Dates With Respect to Album Release', fontsize=13)
-    ax.set_ylabel('Number of Original Tweets', fontsize=13)
-    ax.yaxis.set_major_formatter(ticker.EngFormatter())
     if outdir:
         ax.figure.savefig(os.path.join(outdir, title + '.png'))
 
