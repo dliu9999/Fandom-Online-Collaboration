@@ -28,15 +28,16 @@ def main(targets):
         
         
         ### WIKIPEDIA ###
-        
-        # summary stats
         wiki_fp = test_config['wiki_fp']
-        main_titles = ['Darren Best Singer', 'Casey Best Group']
-        wiki_summary_stats(wiki_fp, main_titles, outdir)
-        
-        # pageviews
         pageviews_fp = test_config['views_fp']
+        main_titles = ['Darren Best Singer', 'Casey Best Group']
+        data = get_data(wiki_fp)
+        
+        # eda
+        wiki_summary_stats(data, main_titles, outdir)
         visualize_pageviews(pageviews_fp, outdir)
+        visualize_revisions(data, main_titles, outdir)
+        visualize_revision_length(data, main_titles, outdir)
         
         # Album Release
 #         wiki_fp = test_config['wiki_fp'][0]

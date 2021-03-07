@@ -115,7 +115,7 @@ def agg_norm_stats(summary, months):
     return agg_norm
     
     
-def wiki_summary_stats(wiki_fp, main_titles, outdir):
+def wiki_summary_stats(data, main_titles, outdir):
     '''
     Generate wiki summary stats
 
@@ -123,23 +123,6 @@ def wiki_summary_stats(wiki_fp, main_titles, outdir):
     :main_titles: titles of main artist pages
     :param outdir: output filepath for csv
     '''
-    wiki_ld = os.listdir(wiki_fp)
-    wiki_ld.sort()
-    files = []
-    
-    for dump in wiki_ld:
-        fp = os.path.join(wiki_fp, dump)
-        files.append(fp)
-
-    data = []
-    for fp in files:
-        try:
-            title, df = read_lightdump(fp)
-        except:
-            print("Cannot read file: " + fp)
-            continue
-        data.append((title, df))
-        
     df = summary_stats(data)
     df = agg_norm_stats(df, get_months(data, main_titles))
     df.to_csv(os.path.join(outdir, 'wiki_summary_stats.csv'))

@@ -179,6 +179,27 @@ def read_lightdump(fp):
     df['date'] = pd.DatetimeIndex(pd.to_datetime(df.date)).tz_localize(None)
     df.date = df.date.apply(lambda x: x.date())
     return title, df
+
+
+def get_data(wiki_fp):
+    
+    wiki_ld = os.listdir(wiki_fp)
+    wiki_ld.sort()
+    files = []
+
+    for dump in wiki_ld:
+        fp = os.path.join(wiki_fp, dump)
+        files.append(fp)
+            
+    data = []
+    for fp in files:
+        try:
+            title, df = read_lightdump(fp)
+        except:
+            print("Cannot read file: " + fp)
+            continue
+        data.append((title, df))
+    return data
     
 
 

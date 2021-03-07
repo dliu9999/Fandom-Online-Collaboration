@@ -130,9 +130,6 @@ def perc_plot(df, suptitle, dfs=None):
     
 ##### For Wikipedia #####
 
-    
-
-
 def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     '''
     Generate wiki overlaid plot
@@ -156,8 +153,66 @@ def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     wiki_tup = tuple(zip(dfs, wiki_legend))
     plot_albums('Wiki Plots', outdir, *wiki_tup)
     
+def visualize_revisions(data, main_titles, outdir):
+    '''
+    Visualize Wikipedia revision data
     
-##### For Wikipedia Page Views #####
+    :param wiki_fp: file path to directory with data
+    :param main_titles: list of artist page titles
+    :param outdir: output filepath for plot
+    '''
+    try:
+        sns.set_theme()
+    except:
+        sns.set
+    fig_dims = (12, 6)
+    fig, ax = plt.subplots(1, 1, figsize = fig_dims)
+
+    for (title, df) in data:
+
+        if title in main_titles:
+
+            df['month'] = pd.to_datetime(df.date).apply(lambda x: str(x.year) + '-' + str(x.month))
+            df.month = pd.to_datetime(df.month)
+
+            sns.lineplot(data=df.groupby('month').count().revert, label=title)
+            ax.set_title("Wikipedia Page Revisions")
+            ax.set_xlabel('Time', fontsize=12)
+            ax.set_ylabel('Number of Revisions', fontsize=12)
+            ax.yaxis.set_major_formatter(ticker.EngFormatter())    
+            ax.legend()
+
+    fig.savefig(os.path.join(outdir,'revisions.png'))
+    
+def visualize_revision_length(data, main_titles, outdir):
+    '''
+    Visualize Wikipedia revision length data
+    
+    :param wiki_fp: file path to directory with data
+    :param main_titles: list of artist page titles
+    :param outdir: output filepath for plot
+    '''
+    try:
+        sns.set_theme()
+    except:
+        sns.set
+    fig_dims = (12, 6)
+    fig, ax = plt.subplots(1, 1, figsize = fig_dims)
+
+    for (title, df) in data:
+        if title in main_titles:
+
+            df.date = pd.to_datetime(df.date)
+
+            sns.lineplot(data=df.groupby('date').max().length, label=title)
+            ax.set_title("Wikipedia Page Revision Length")
+            ax.set_xlabel('Time', fontsize=12)
+            ax.set_ylabel('Revision Length', fontsize=12)
+            ax.yaxis.set_major_formatter(ticker.EngFormatter())    
+            ax.legend()
+
+    fig.savefig(os.path.join(outdir, 'revision_length.png'))
+
 
 def visualize_pageviews(views_fp, outdir):
     '''
