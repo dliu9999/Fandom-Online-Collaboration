@@ -158,7 +158,6 @@ def read_lightdump(fp):
 	:param n: number of articles to read
 	:return: list of article titles, list of corresponding article lightdump data as DataFrame
 	'''
-    
     with open(fp) as file:
         df = pd.DataFrame(columns = ['date', 'revert', 'revision_id', 'length', 'user'])
         for line in file:
@@ -180,6 +179,7 @@ def read_lightdump(fp):
     df['date'] = pd.DatetimeIndex(pd.to_datetime(df.date)).tz_localize(None)
     df.date = df.date.apply(lambda x: x.date())
     return title, df
+    
 
 
 ##### For Twitter #####

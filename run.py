@@ -29,30 +29,27 @@ def main(targets):
         
         ### WIKIPEDIA ###
         
-        # Album Release
-        wiki_fp = test_config['wiki_fp'][0]
-        wiki_release_dates = test_config['wiki_release_dates']
-        wiki_legend = test_config['wiki_legend']
-        generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir)
+        # summary stats
+        wiki_fp = test_config['wiki_fp']
+        main_titles = ['Darren Best Singer', 'Casey Best Group']
+        wiki_summary_stats(wiki_fp, main_titles, outdir)
         
-        # Summary Stats
-        wiki_fp = test_config['wiki_fp'][1]
-        wiki_summary_stats(wiki_fp, outdir)
+        # pageviews
+        pageviews_fp = test_config['views_fp']
+        visualize_pageviews(pageviews_fp, outdir)
+        
+        # Album Release
+#         wiki_fp = test_config['wiki_fp'][0]
+#         wiki_release_dates = test_config['wiki_release_dates']
+#         wiki_legend = test_config['wiki_legend']
+#         generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir)
+        
         print('Generated wiki plots')
 
         ### TRENDS/VIEWS ###
         trends_fp = test_config['trends_fp']
-        views_fp = test_config['views_fp']
         visualize_google_trends(trends_fp, outdir)
-        visualize_pageviews(views_fp, outdir)
         print('Generated trends/views plots')
-        
-        
-        ### GOOGLE TRENDS ###
-        trends_fp = test_config['trends_fp']
-        
-        # Plotting
-        visualize_google_trends(trends_fp, outdir)
         
         # Summary Stats
         trends_summary_stats(trends_fp, outdir)

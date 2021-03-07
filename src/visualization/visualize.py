@@ -4,6 +4,9 @@ import os
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from matplotlib.ticker import ScalarFormatter
+
 
 sys.path.insert(0, 'src/data')
 
@@ -127,6 +130,9 @@ def perc_plot(df, suptitle, dfs=None):
     
 ##### For Wikipedia #####
 
+    
+
+
 def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     '''
     Generate wiki overlaid plot
@@ -149,6 +155,45 @@ def generate_wiki_plot(wiki_fp, wiki_release_dates, wiki_legend, outdir):
     # plot overlaid line chart
     wiki_tup = tuple(zip(dfs, wiki_legend))
     plot_albums('Wiki Plots', outdir, *wiki_tup)
+    
+    
+##### For Wikipedia Page Views #####
+
+def visualize_pageviews(views_fp, outdir):
+    '''
+    Visualize Wikipedia page view data
+    
+    :param fp: file path to directory with data
+    :param outdir: output filepath for plot
+    '''
+    trend_csvs = os.listdir(views_fp)
+    try:
+        sns.set_theme()
+    except:
+        sns.set
+    fig_dims = (12, 6)
+    fig, ax = plt.subplots(1, 1, figsize = fig_dims)
+
+    for csv in trend_csvs:
+        try:
+            df = pd.read_csv(os.path.join(views_fp, csv), engine='python')
+        except:
+            print('Cannot read file: ' + os.path.join(views_fp, csv))
+            continue
+            
+        df['date'] = df.timestamp.apply(lambda x: x[:7])
+        df['date'] = pd.to_datetime(df.date)
+        
+        title = df.iloc[0].article
+        
+        sns.lineplot(data=df.groupby('date').sum().views, label=title)
+        ax.set_title("Wikipedia PageViews per Month")
+        ax.set_xlabel('Time', fontsize=12)
+        ax.set_ylabel('Number of Views', fontsize=12)
+        ax.yaxis.set_major_formatter(ticker.EngFormatter())    
+        ax.legend()
+
+    fig.savefig(os.path.join(outdir, 'pageviews.png'))
 
 ##### For Google Trends #####
 
@@ -184,33 +229,3 @@ def visualize_google_trends(trends_fp, outdir):
         plt.savefig(os.path.join(outdir, file_name))
         
 
-##### For Wikipedia Page Views #####
-
-def visualize_pageviews(views_fp, outdir):
-    '''
-    Visualize Wikipedia page view data
-    
-    :param fp: file path to directory with data
-    :param outdir: output filepath for plot
-    '''
-    trend_csvs = os.listdir(views_fp)
-    
-    for csv in trend_csvs:
-        df = pd.read_csv(os.path.join(views_fp, csv))
-        
-        start = str(df['timestamp'].min())[:10]
-        end = str(df['timestamp'].max())[10:]
-        
-        title_text = 'Wikipedia Page Views: '+ start + ' to ' +\
-                end + ')'
-        
-        file_name = 'Wikipedia Page Views Plot'+ start + ' ' + end + '.png'
-        
-        #plotting
-        g = sns.lineplot(data = df, x = 'timestamp', y = 'views',
-                 hue = 'article', dashes = False)
-        
-        g.set_title(title_text)
-        g.set(xlabel = 'Date', ylabel = 'Views')
-        
-        plt.savefig(os.path.join(outdir, file_name))
