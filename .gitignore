@@ -132,9 +132,7 @@ dmypy.json
 data/raw/*
 !data/raw/.gitkeep 
 data/temp/*
-!data/temp/.gitkeep 
-data/eda/*
-!data/eda/.gitkeep 
+!data/temp/.gitkeep
 
 # personal notebooks
 notebooks/personal/*
