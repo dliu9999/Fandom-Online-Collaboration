@@ -23,7 +23,8 @@ def main(targets):
         tweets_fp = test_config['tweets_fp']
         tweets_release_dates = test_config['tweets_release_dates']
         tweets_legend = test_config['tweets_legend']
-        generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir)
+        generate_tweets_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir)
+        generate_perc_twitter_plots(tweets_fp, outdir=outdir)
         print('Generated twitter plots')
         
         

@@ -144,8 +144,7 @@ def trends_summary_stats(trends_fp, outdir):
         df = pd.read_csv(os.path.join(trends_fp, csv))
         
         summary = df.groupby('Artist').agg({'Popularity': ['mean', 'median',
-                                                 pd.Series.mode, 'count',
-                                                 'max', 'min', 'std',
+                                                 'count', 'max', 'min', 'std',
                                                  'var', 'skew', pd.DataFrame.kurt]})
         
         start = str(df['date'].min())[:10]

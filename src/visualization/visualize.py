@@ -49,7 +49,7 @@ def plot_albums(title, outdir=None, *album_tups):
 
 ##### For Twitter #####
 
-def generate_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
+def generate_tweets_twitter_plot(tweets_fp, tweets_release_dates, tweets_legend, outdir):
     '''
     Generate twitter overlaid plot
 
@@ -85,7 +85,7 @@ def percent_col(users, col, a, perc=True):
     prop = users.iloc[:a].sum() / users.sum()
     return round(prop * 100, 2)
 
-def perc_plot(df, suptitle, dfs=None):
+def perc_plot(df, suptitle, dfs=None, outdir=None, legend=None):
     '''
     Plots A% of users account for B% engagement plots
     :param df: first (or only) df to plot
@@ -95,14 +95,13 @@ def perc_plot(df, suptitle, dfs=None):
     # if overlaid plot
     if dfs:
         colors = [sns.color_palette()[0]] * (len(dfs) + 1)
-        fig_dims = (20, 7)
         ylim = (35, 100)
     else:
         colors = ['#e02460', '#19cf86', '#1DA1F2']
-        fig_dims = (20, 7)
         ylim = (55, 100)
     
     # prepare lists and plot fig/ax
+    fig_dims = (20, 7)
     percs = np.arange(0, 0.051, 0.001)
     perc_cols = ['likes_count', 'retweets_count', 'replies_count']
     perc_titles = ['Likes', 'Retweets', 'Replies']
@@ -112,21 +111,43 @@ def perc_plot(df, suptitle, dfs=None):
     for i in range(3):
         # plot curve
         curr = [percent_col(df, perc_cols[i], p) for p in percs]
-        sns.lineplot(percs*100, curr, ax=ax[i], color=colors[i])
+        sns.lineplot(x=percs*100, y=curr, ax=ax[i], color=colors[i])
         
         # overlay other df curves
         if dfs:
             for j in range(len(dfs)):
                 curr_df = [percent_col(dfs[j], perc_cols[i], p) for p in percs]
-                sns.lineplot(percs*100, curr_df, ax=ax[i], color=sns.color_palette()[j + 1])
+                sns.lineplot(x=percs*100, y=curr_df, ax=ax[i], color=sns.color_palette()[j + 1])
             if legend:
                 ax[i].legend(legend, loc=4)
+
+        # labels
         ax[i].set_title('A% of Users Account for B% of ' + perc_titles[i], fontsize=15)
         ax[i].set_xlabel('A', fontsize=13)
         ax[i].set_ylabel('B', fontsize=13)
         ax[i].xaxis.set_major_formatter(ticker.PercentFormatter())
         ax[i].yaxis.set_major_formatter(ticker.PercentFormatter())
         ax[i].set_ylim(ylim)
+
+    if outdir:
+        fig.savefig(os.path.join(outdir, 'percent_plots.png'))
+    
+def generate_perc_twitter_plots(tweets_fp, outdir):
+    '''
+    Plots the percent plots
+    :param tweets_fp: file path to directory with data
+    :param outdir: file path for plot
+    '''
+    tweet_csvs = os.listdir(tweets_fp)
+    tweet_csvs.sort()
+    dfs = []
+
+    # read in data
+    for csv in tweet_csvs:
+        dfs.append(pd.read_csv(os.path.join(tweets_fp, csv)))
+
+    # plot
+    perc_plot(dfs[0], 'Percent Plots', dfs=dfs[1:], outdir=outdir)
     
 ##### For Wikipedia #####
 
