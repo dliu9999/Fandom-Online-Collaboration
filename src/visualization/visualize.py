@@ -225,7 +225,7 @@ def visualize_revision_length(data, main_titles, outdir):
 
             df.date = pd.to_datetime(df.date)
 
-            sns.lineplot(data=df.groupby('date').max().length, label=title)
+            sns.lineplot(data=df.groupby('date').size(), label=title)
             ax.set_title("Wikipedia Page Revision Length")
             ax.set_xlabel('Time', fontsize=12)
             ax.set_ylabel('Revision Length', fontsize=12)
