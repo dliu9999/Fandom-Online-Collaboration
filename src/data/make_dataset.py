@@ -72,6 +72,6 @@ def user_query(user, since, until, pandas=True, csv=False, output='test.csv'):
 
 # be = tweets_query('#bts', '2020-11-30', '2020-12-04', csv=True, output='../../data/raw/be1.csv')
 
-dw = tweets_query('#btsdarkandwild', '2014-08-17', '2014-09-02', csv=True, output='../../data/raw/bts/dark_wild1.csv')
-love = tweets_query('#love_yourself', '2018-05-16', '2018-06-1', csv=True, output='../../data/raw/bts/love1.csv')
-be = tweets_query('#bts_be', '2020-11-18', '2020-12-04', csv=True, output='../../data/raw/bts/be1.csv')
+# dw = tweets_query('#btsdarkandwild', '2014-08-17', '2014-09-02', csv=True, output='../../data/raw/bts/dark_wild1.csv')
+# love = tweets_query('#love_yourself', '2018-05-16', '2018-06-1', csv=True, output='../../data/raw/bts/love1.csv')
+# be = tweets_query('#bts_be', '2020-11-18', '2020-12-04', csv=True, output='../../data/raw/bts/be1.csv')
