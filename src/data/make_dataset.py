@@ -2,9 +2,9 @@ import pandas as pd
 import numpy as np
 import os
 from bs4 import BeautifulSoup
-#import twint
-#from pytrends.request import TrendReq
-#import pageviewapi
+import twint
+from pytrends.request import TrendReq
+import pageviewapi
 
 ##### For Wikipedia #####
 

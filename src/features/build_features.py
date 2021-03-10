@@ -1,6 +1,6 @@
 #to turn raw data into features for modeling
 import pandas as pd
-#import wikipedia
+import wikipedia
 import sys
 from datetime import date
 
